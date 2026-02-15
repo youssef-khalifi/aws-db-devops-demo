@@ -67,9 +67,10 @@ jobs:
 
       - name: Run Ansible playbook
         env:
-          DB_HOST: ${{ env.DB_ENDPOINT }}
+          DB_HOST: ${{ steps.apply.outputs.db_endpoint }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASS: ${{ secrets.DB_PASS }}
         run: |
+          ansible-galaxy collection install community.postgresql
           ansible-playbook -i "localhost," ansible/playbook.yml \
             --extra-vars "db_host=$DB_HOST db_user=$DB_USER db_pass=$DB_PASS"

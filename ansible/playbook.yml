@@ -18,7 +18,6 @@
         login_password: "{{ db_pass }}"
       register: db_ping
       failed_when: db_ping is failed
-      name: "check db copy availability"
 
     - name: Delete all data from admins table (if exists)
       community.postgresql.postgresql_query:
