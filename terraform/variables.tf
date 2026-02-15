@@ -1,30 +1,24 @@
-variable "aws_region" {
-  description = "AWS region"
-  default     = "us-east-1"
-}
-
-variable "old_db_identifier" {
-  description = "Identifier of the old DB to snapshot"
+variable "source_db_identifier" {
+  description = "Original RDS DB"
+  type        = string
   default     = "database-1"
 }
 
-variable "new_db_identifier" {
-  description = "Identifier for the new DB copy"
-  default     = "database-1-copy"
-}
+variable "subnet_ids" {
+  description = "Subnets for DB subnet group"
+  type        = list(string)
 
-variable "db_instance_class" {
-  description = "RDS instance type"
-  default     = "db.t3.micro"
+  default = [
+    "subnet-08ad523b816584149",
+    "subnet-0adc1eec23ec7b71c"
+  ]
 }
 
 variable "vpc_security_group_ids" {
-  description = "List of VPC security group IDs for the new DB"
+  description = "Security groups for DB"
   type        = list(string)
-  default     = ["sg-0255fbf36d40e86c1"]  # replace with your old DB SG
-}
 
-variable "db_subnet_group_name" {
-  description = "DB subnet group to use for the new DB"
-  default     = "default"  # replace if needed
+  default = [
+    "sg-0255fbf36d40e86c1"
+  ]
 }
