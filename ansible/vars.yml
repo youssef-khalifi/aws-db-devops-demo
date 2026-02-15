@@ -4,3 +4,5 @@ db_password: StrongPass123
 db_host: mydb-copy.abcdef.us-east-1.rds.amazonaws.com
 db_port: 5432
 sql_script_path: "./ansible/sql/create_tables.sql"
+sql_script_path_insert: "./ansible/sql/insert_admins.sql"
+

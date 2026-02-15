@@ -19,3 +19,12 @@
     login_port: "{{ db_port }}"
     path: "{{ sql_script_path }}"
   when: not db_check_result.failed
+
+- name: Insert values into admins table
+  community.postgresql.postgresql_query:
+    db: "{{ db_name }}"
+    login_user: "{{ db_user }}"
+    login_password: "{{ db_password }}"
+    login_host: "{{ db_host }}"
+    login_port: "{{ db_port }}"
+    path: "{{ sql_script_path_insert }}"
