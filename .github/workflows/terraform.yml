@@ -12,9 +12,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 🔹 Debug step: list all files to confirm terraform/ exists
-      - name: List repo files (debug)
-        run: ls -R
+      # 🔹 Debug step: check current directory and terraform folder
+      - name: Check terraform folder
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "List all files in repo:"
+          ls -l
+          echo "Check terraform folder contents:"
+          ls -l terraform
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
