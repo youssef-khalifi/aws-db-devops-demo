@@ -1,10 +1,46 @@
 ---
-- name: Check DB Copy and Apply SQL Scripts
-  hosts: db
+- name: PostgreSQL DB Automation
+  hosts: localhost
   gather_facts: false
 
-  vars_files:
-    - vars.yml
+  vars:
+    db_host: "{{ db_host }}"   # passed from GitHub Actions
+    db_user: "{{ db_user }}"
+    db_pass: "{{ db_pass }}"
+    db_name: myapp             # your DB name
 
-  roles:
-    - db_check
+  tasks:
+
+    - name: Check DB availability
+      community.postgresql.postgresql_ping:
+        login_host: "{{ db_host }}"
+        login_user: "{{ db_user }}"
+        login_password: "{{ db_pass }}"
+      register: db_ping
+      failed_when: db_ping is failed
+      name: "check db copy availability"
+
+    - name: Delete all data from admins table (if exists)
+      community.postgresql.postgresql_query:
+        db: "{{ db_name }}"
+        login_host: "{{ db_host }}"
+        login_user: "{{ db_user }}"
+        login_password: "{{ db_pass }}"
+        query: "DELETE FROM admins;"
+      ignore_errors: true
+
+    - name: Create admins table
+      community.postgresql.postgresql_query:
+        db: "{{ db_name }}"
+        login_host: "{{ db_host }}"
+        login_user: "{{ db_user }}"
+        login_password: "{{ db_pass }}"
+        src: "ansible/scripts/create_admin_table.sql"
+
+    - name: Insert data into admins table
+      community.postgresql.postgresql_query:
+        db: "{{ db_name }}"
+        login_host: "{{ db_host }}"
+        login_user: "{{ db_user }}"
+        login_password: "{{ db_pass }}"
+        src: "ansible/scripts/insert_admin_values.sql"

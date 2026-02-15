@@ -1,8 +1,15 @@
-db_name: myapp_copy
-db_user: admin
-db_password: StrongPass123
-db_host: mydb-copy.abcdef.us-east-1.rds.amazonaws.com
-db_port: 5432
-sql_script_path: "./ansible/sql/create_tables.sql"
-sql_script_path_insert: "./ansible/sql/insert_admins.sql"
+# ansible/vars.yml
 
+# Database connection details
+db_name: myapp_copy
+db_user: appuser
+db_password: AppPass123
+db_host: 127.0.0.1
+db_port: 5432
+
+# Paths to SQL scripts (relative to playbook)
+sql_scripts_path: "./sql"       # folder containing all SQL scripts
+check_db_script: "{{ sql_scripts_path }}/check_db.sql"
+delete_data_script: "{{ sql_scripts_path }}/delete_data.sql"
+create_table_script: "{{ sql_scripts_path }}/create_admins.sql"
+insert_data_script: "{{ sql_scripts_path }}/insert_admins.sql"

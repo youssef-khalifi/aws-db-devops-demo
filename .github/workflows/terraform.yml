@@ -9,10 +9,11 @@ jobs:
 
     steps:
 
+      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 🔹 Debug step: check current directory and terraform folder
+      # Step 2: Debug current repo & terraform folder (optional)
       - name: Check terraform folder
         run: |
           echo "Current directory:"
@@ -22,11 +23,13 @@ jobs:
           echo "Check terraform folder contents:"
           ls -l terraform
 
+      # Step 3: Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.6.0
 
+      # Step 4: Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -34,8 +37,39 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: us-east-1
 
+      # Step 5: Terraform Init
       - name: Terraform Init
         run: terraform -chdir=terraform init
 
+      # Step 6: Terraform Apply
       - name: Terraform Apply
+        id: apply
         run: terraform -chdir=terraform apply -auto-approve
+
+      # Step 7: Get DB endpoint
+      - name: Get DB endpoint
+        id: db_endpoint
+        run: |
+          echo "DB_ENDPOINT=$(terraform -chdir=terraform output -raw db_endpoint)" >> $GITHUB_ENV
+
+      - name: Show DB endpoint
+        run: echo "The new DB endpoint is $DB_ENDPOINT"
+
+      ###############################
+      # Step 8: Run Ansible playbook
+      ###############################
+      - name: Setup Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip sshpass
+          pip3 install ansible
+          ansible --version
+
+      - name: Run Ansible playbook
+        env:
+          DB_HOST: ${{ env.DB_ENDPOINT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+        run: |
+          ansible-playbook -i "localhost," ansible/playbook.yml \
+            --extra-vars "db_host=$DB_HOST db_user=$DB_USER db_pass=$DB_PASS"

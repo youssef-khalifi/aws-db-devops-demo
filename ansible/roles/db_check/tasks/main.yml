@@ -1,30 +1,35 @@
----
-- name: Check DB Copy Availability
+- name: Check DB copy availability
   community.postgresql.postgresql_query:
     db: "{{ db_name }}"
     login_user: "{{ db_user }}"
     login_password: "{{ db_password }}"
     login_host: "{{ db_host }}"
     login_port: "{{ db_port }}"
-    query: "SELECT 1;"
-  register: db_check_result
-  ignore_errors: yes
+    file: "{{ check_db_script }}"
 
-- name: Execute SQL script if DB is online
+- name: Delete data from all tables
   community.postgresql.postgresql_query:
     db: "{{ db_name }}"
     login_user: "{{ db_user }}"
     login_password: "{{ db_password }}"
     login_host: "{{ db_host }}"
     login_port: "{{ db_port }}"
-    path: "{{ sql_script_path }}"
-  when: not db_check_result.failed
+    file: "{{ delete_data_script }}"
 
-- name: Insert values into admins table
+- name: Create admins table
   community.postgresql.postgresql_query:
     db: "{{ db_name }}"
     login_user: "{{ db_user }}"
     login_password: "{{ db_password }}"
     login_host: "{{ db_host }}"
     login_port: "{{ db_port }}"
-    path: "{{ sql_script_path_insert }}"
+    file: "{{ create_table_script }}"
+
+- name: Insert data into admins
+  community.postgresql.postgresql_query:
+    db: "{{ db_name }}"
+    login_user: "{{ db_user }}"
+    login_password: "{{ db_password }}"
+    login_host: "{{ db_host }}"
+    login_port: "{{ db_port }}"
+    file: "{{ insert_data_script }}"
