@@ -1,0 +1,10 @@
+---
+- name: Check DB Copy and Apply SQL Scripts
+  hosts: db
+  gather_facts: false
+
+  vars_files:
+    - vars.yml
+
+  roles:
+    - db_check

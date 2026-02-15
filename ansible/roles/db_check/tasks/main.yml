@@ -1,0 +1,21 @@
+---
+- name: Check DB Copy Availability
+  community.postgresql.postgresql_query:
+    db: "{{ db_name }}"
+    login_user: "{{ db_user }}"
+    login_password: "{{ db_password }}"
+    login_host: "{{ db_host }}"
+    login_port: "{{ db_port }}"
+    query: "SELECT 1;"
+  register: db_check_result
+  ignore_errors: yes
+
+- name: Execute SQL script if DB is online
+  community.postgresql.postgresql_query:
+    db: "{{ db_name }}"
+    login_user: "{{ db_user }}"
+    login_password: "{{ db_password }}"
+    login_host: "{{ db_host }}"
+    login_port: "{{ db_port }}"
+    path: "{{ sql_script_path }}"
+  when: not db_check_result.failed
