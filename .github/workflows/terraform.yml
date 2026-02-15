@@ -12,6 +12,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 🔹 Debug step: list all files to confirm terraform/ exists
       - name: List repo files (debug)
         run: ls -R
 
