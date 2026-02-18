@@ -62,7 +62,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pip sshpass
-          pip3 install ansible
+          pip3 install ansible psycopg2-binary
           ansible --version
 
       - name: Run Ansible playbook
