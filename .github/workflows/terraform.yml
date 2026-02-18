@@ -46,11 +46,14 @@ jobs:
         id: apply
         run: terraform -chdir=terraform apply -auto-approve
 
-      # Step 7: Get DB endpoint
+      # Step 7: Get DB endpoint (split host and port for Ansible)
       - name: Get DB endpoint
         id: db_endpoint
         run: |
-          echo "DB_ENDPOINT=$(terraform -chdir=terraform output -raw db_endpoint)" >> $GITHUB_ENV
+          ENDPOINT=$(terraform -chdir=terraform output -raw db_endpoint)
+          echo "DB_ENDPOINT=$ENDPOINT" >> $GITHUB_ENV
+          echo "DB_HOST=${ENDPOINT%%:*}" >> $GITHUB_ENV
+          echo "DB_PORT=${ENDPOINT##*:}" >> $GITHUB_ENV
 
       - name: Show DB endpoint
         run: echo "The new DB endpoint is $DB_ENDPOINT"
@@ -67,10 +70,11 @@ jobs:
 
       - name: Run Ansible playbook
         env:
-          DB_HOST: ${{ env.DB_ENDPOINT }}
+          DB_HOST: ${{ env.DB_HOST }}
+          DB_PORT: ${{ env.DB_PORT }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASS: ${{ secrets.DB_PASS }}
         run: |
           ansible-galaxy collection install community.postgresql
           ansible-playbook -i "localhost," ansible/playbook.yml \
-            --extra-vars "db_host=$DB_HOST db_user=$DB_USER db_pass=$DB_PASS"
+            --extra-vars "db_host=$DB_HOST db_port=$DB_PORT db_user=$DB_USER db_pass=$DB_PASS"
