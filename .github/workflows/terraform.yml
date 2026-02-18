@@ -67,7 +67,7 @@ jobs:
 
       - name: Run Ansible playbook
         env:
-          DB_HOST: ${{ steps.apply.outputs.db_endpoint }}
+          DB_HOST: ${{ env.DB_ENDPOINT }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASS: ${{ secrets.DB_PASS }}
         run: |
