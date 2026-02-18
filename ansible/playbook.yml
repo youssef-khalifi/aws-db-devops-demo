@@ -1,6 +1,7 @@
 ---
 - name: PostgreSQL DB Automation
   hosts: localhost
+  connection: local
   gather_facts: false
 
   vars:
