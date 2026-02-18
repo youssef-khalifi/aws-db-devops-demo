@@ -6,15 +6,10 @@ provider "aws" {
 }
 
 ############################
-# 1. Create DB Subnet Group
+# 1. Use existing DB Subnet Group (avoids DBSubnetGroupAlreadyExists in CI)
 ############################
-resource "aws_db_subnet_group" "new_db_subnet_group" {
-  name       = "${var.source_db_identifier}-subnet-group-demo"
-  subnet_ids = var.subnet_ids
-
-  tags = {
-    Name = "New DB Subnet Group Demo"
-  }
+data "aws_db_subnet_group" "existing_db_subnet_group" {
+  name = "${var.source_db_identifier}-subnet-group-demo"
 }
 
 ############################
@@ -36,7 +31,7 @@ resource "aws_db_instance" "copy_db" {
   publicly_accessible     = true
   skip_final_snapshot     = true
 
-  db_subnet_group_name    = aws_db_subnet_group.new_db_subnet_group.name
+  db_subnet_group_name    = data.aws_db_subnet_group.existing_db_subnet_group.name
   vpc_security_group_ids  = var.vpc_security_group_ids
 
   # Optional: additional settings
